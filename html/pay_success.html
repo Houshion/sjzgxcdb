@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>支付结果</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />	
+		<style>
+			html,body{
+				background: #fff;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="text-center" style="padding: 20%;">
+			<img src="../img/pay_success.png" style="width: 2.07rem;"/>
+			<p class="font-16 color-cce198" style="margin-top: 10%;">支付成功！</p>
+		</div>
+		<button class="confirm" onclick="location.href='index.php';">完成</button>
+	</body>
+</html>
+<script src="../js/jquery.min.js"></script>
+<script>
+	$(".confirm").click(function () {
+		$(this).attr("disabled","disabled");
+	});
+</script>

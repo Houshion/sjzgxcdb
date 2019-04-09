@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>个人资料</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />
+		<style>
+			html,body{
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<form  action="" enctype="multipart/form-data" method="post" name="form" id="form" onsubmit="return formSubmit()">
+			<label class="LR-block marginTB-20 paddingLR-24 paddingTB-3" onclick="getImg()">
+				<input type="file" name="avatar" hidden id="hd_img" accept="image/*" capture="camera" multiple/>
+				<!-- <input type="hidden" name="avatar" value=""> -->
+				<span class="color-333 font-15">头像</span><em class="flex-center"><img  class="marginRight-20 hd_img" id="headimg"/><img src="../img/arrow_right.png" class="right"/></em>
+			</label>
+		</form>
+			<div class="marginTop-20 dataBox font-15">
+				<div class="LR-block paddingTB-4 paddingLR-24" id="nickname">
+					<span class="color-333">昵称</span><em class="flex-center"><i class="color-999 marginRight-20 nickname"></i><img src="../img/arrow_right.png" class="right"/></em>
+				</div>
+				<div class="LR-block paddingTB-4 paddingLR-24" id="bd_phone">
+					<span class="color-333">手机</span><em class="flex-center"><i class="color-999 marginRight-20 phone"></i><img src="../img/arrow_right.png" class="right"/></em>
+				</div>
+			</div>
+		<div class="mask"></div>
+		<!--修改昵称-->
+		<section class="gaiNameWin">
+			<div class="gaiNameBox">
+				<p class="color-333 font-15">修改昵称</p>
+				<input type="text" class="name" placeholder="请输入昵称" id="" value="" />
+				<div class="choseBox flex-center font-15 justify-between paddingLR-24">
+					<span class="color-cce198 close">取消</span>
+					<span class="color-fff" style="background: #cce198;" id="confirm">确认</span>
+				</div>
+			</div>
+		</section>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/jquery.form.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
+<script>
+	//解决上传图片时capture="camera"在安卓与IOS的兼容性问题（在IOS只能拍照，不能选相册）
+	var ua = navigator.userAgent.toLowerCase();//获取浏览器的userAgent,并转化为小写——注：userAgent是用户可以修改的
+	var isIos = (ua.indexOf('iphone') != -1) || (ua.indexOf('ipad') != -1);//判断是否是苹果手机，是则是true
+	if (isIos) {
+		$("input:file").removeAttr("capture");
+	};
+
+
+//	初始化
+	 var phone='';
+	 var localIds,serverId;
+
+	getData();
+	function getData(){
+		$.ajax({
+	        type: 'POST',
+	        url:dlcUrl()+'user_api/get_userinfo',
+			dataType:'json',
+	        success: function(data){
+	        	console.log(data);
+	        	if(data.code=='1'){
+	        		$('#headimg').attr('src',data.data.avatar);
+	        		$('.nickname').text(data.data.nickname);
+	        		$('.phone').text(data.data.account);
+	        		phone=data.data.account;
+	        	}else{
+	        		tooltipbox.show('获取个人信息失败');
+	        	}
+	        }
+	      })
+	}
+	
+	$('#hd_img').on('change', function() {
+		 $('#form').submit();   
+	})
+
+	function getImg () {
+			// alert(1)
+
+		// wx.config({
+		// 	debug: false, // 开启调试模式,调用的所有api的返回值会在客户端//alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+		// 	appId: '', // 必填，公众号的唯一标识
+		// 	timestamp: '', // 必填，生成签名的时间戳
+		// 	nonceStr: '', // 必填，生成签名的随机串
+		// 	signature: '',// 必填，签名，见附录1
+		// 	jsApiList: [
+		// 		'checkJsApi',
+		// 		'onMenuShareTimeline',
+		// 		'onMenuShareAppMessage',
+		// 		'onMenuShareQQ',
+		// 		'onMenuShareWeibo',
+		// 		'hideMenuItems',
+		// 		'showMenuItems',
+		// 		'hideAllNonBaseMenuItem',
+		// 		'showAllNonBaseMenuItem',
+		// 		'translateVoice',
+		// 		'startRecord',
+		// 		'stopRecord',
+		// 		'onRecordEnd',
+		// 		'playVoice',
+		// 		'pauseVoice',
+		// 		'stopVoice',
+		// 		'uploadVoice',
+		// 		'downloadVoice',
+		// 		'chooseImage',
+		// 		'previewImage',
+		// 		'uploadImage',
+		// 		'downloadImage',
+		// 		'getNetworkType',
+		// 		'openLocation',
+		// 		'getLocation',
+		// 		'hideOptionMenu',
+		// 		'showOptionMenu',
+		// 		'closeWindow',
+		// 		'scanQRCode',
+		// 		'chooseWXPay',
+		// 		'openProductSpecificView',
+		// 		'addCard',
+		// 		'chooseCard',
+		// 		'openCard'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+		// });
+		// wx.ready(function(){
+		// 	wx.chooseImage({
+		// 		count: 1, // 默认9
+		// 		sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+		// 		sourceType: ['album', 'camera'], // 可以指定来源是相册还是相机，默认二者都有
+		// 		success: function (res) {
+		// 			localIds = res.localIds; // 返回选定照片的本地ID列表，localId可以作为img标签的src属性显示图片
+		// 			alert(localIds)
+		// 			$('#headimg').attr('src',localIds);
+					
+		// 			wx.uploadImage({
+		// 					localId: localIds[0], // 需要上传的图片的本地ID，由chooseImage接口获得
+		// 					isShowProgressTips: 1,// 默认为1，显示进度提示
+		// 					success: function (res) {
+		// 							serverId = res.serverId; // 返回图片的服务器端ID
+		// 					},
+		// 					fail: function (){
+		// 							alert(123)
+		// 					}
+		// 			});
+					
+		// 			// $('#form').submit();   
+
+		// 		}
+		// 	});
+		// });
+
+	}
+
+    function formSubmit(){
+        $('#form').ajaxSubmit({
+            type:'POST',
+            data:{api_name:'save_user'},
+            url:dlcUrl()+'user_api/update_avatar',
+            dataType:  'json',
+            beforeSubmit:function(){
+				// var imgValue=$('#hd_img').val();
+				if(localIds==''){
+					tooltipbox.show('请选择图片');
+					return false;
+				}
+				loadingShow();
+            },
+            success: function(res){
+                loadingHide();
+                console.log(res)
+                if(res.code==1){
+                	tooltipbox.show('修改成功');
+                    getData();
+                }else{
+                	tooltipbox.show(res.msg);
+                }
+            }
+        });
+        return false; //阻止表单默认提交
+    }
+    
+    $('#nickname').click(function(){
+    	$('.mask,.gaiNameWin').fadeIn(300)
+    })
+    
+     $('.mask,.close').click(function(){
+    	$('.mask,.gaiNameWin').fadeOut(300)
+    })
+     
+     $('#bd_phone').click(function(){
+     	location.href='gai_phone.html?phone='+phone;
+     })
+     
+     
+     $('#confirm').click(function(){
+     	var name=$('.name').val();
+     	if(isNull(name)){
+     		tooltipbox.show('请输入昵称')
+     	}else{
+		 	$.ajax({
+		        type: 'POST',
+		        data:{nickname:name},
+		        url:dlcUrl()+'user_api/update_nickname',
+				dataType:'json',
+		        success: function(data){
+		        	console.log(data);
+		        	if(data.code=='1'){
+		        		tooltipbox.show('修改昵称成功');
+		        		$('.mask,.gaiNameWin').fadeOut(300)
+		        		$('.nickname').text(data.data.nickname);
+		        	}else{
+		        		tooltipbox.show('修改昵称失败');
+		        	}
+		        }
+		      })
+     		
+     	}
+     })
+</script>

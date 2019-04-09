@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>支付</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />		
+		<style>
+			.checks{
+				width: 0.44rem;
+				height: 0.44rem;
+			}
+		</style>
+	</head>
+	<body style="overflow: hidden;">
+		<div class="shop_dataBox marginTop-20 background-fff">
+			<div class="LR-block paddingTB-4 marginLR-20 font-15">
+				<i class="color-333 marginLeft-20">充电宝ID</i><span class="color-999" id="num">022123132321</span>
+			</div>
+			<div class="LR-block paddingTB-4 marginLR-20 font-15">
+				<i class="color-333 marginLeft-20">租借时间</i><span class="color-999" id="start_time">2017-11-07 19:30</span>
+			</div>
+			<div class="LR-block paddingTB-4 marginLR-20 font-15">
+				<i class="color-333 marginLeft-20">结束时间</i><span class="color-999" id="end_time">2017-11-07 19:30</span>
+			</div>
+			<div class="LR-block paddingTB-4 marginLR-20 font-15">
+				<i class="color-333 marginLeft-20">应付金额</i><span style="color: #ec6363;" id="fees">￥10.00</span>
+			</div>
+		</div>	
+		<div class="marginTB-20 background-fff">
+			<label class="LR-block paddingTB-4 marginLR-20 font-15">
+				<em class="flex-center"><img src="../img/ic_wallet.png" style="width: 0.6rem;"/><i class="color-333 marginLeft-20">余额支付</i></em>
+				<input type="radio"  hidden class="radios" checked name="check" value="1" />
+				<span class="checks"></span>
+			</label>
+			<label class="LR-block paddingTB-4 marginLR-20 font-15">
+				<em  class="flex-center"><img src="../img/ic_wechat.png" style="width: 0.6rem;"/><i class="color-333 marginLeft-20">微信支付</i></em>
+				<input type="radio"  hidden class="radios" name="check" value="2" />
+				<span class="checks"></span>
+			</label>
+		</div>
+		<div class="confirm" style="margin-top: 1rem;" >确认</div>
+	</body>
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/tooltipbox.js"></script>
+<script src="../js/dlc.js"></script>
+<script>
+	$(function(){
+
+var pay_type = $('input[name="check"]:checked').val();
+        console.log(pay_type)
+	$("input[name=check]").on('change',function() {
+        pay_type = $('input[name="check"]:checked').val();
+        console.log(pay_type)
+	});
+
+
+		$.ajax({
+			type:"post",
+			url:dlcUrl()+'user_api/back_info',
+			dataType:'json',
+			data:{macno:getUrlParam('macno')},
+			success:function(data){
+				console.log(data);
+				//alert(JSON.stringify(data))
+				if(data.code=='1'){
+					$('#num').text(data.data.number);
+					$('#start_time').text(format(data.data.start_time,'Y-m-d H:i'));
+					$('#end_time').text(format(data.data.end_time,'Y-m-d H:i'));
+					$('#fees').text('￥'+data.data.price);
+
+
+                    $('.confirm').click(function(){
+                        tooltipbox.show('支付中...')
+                        $('.confirm').attr("disabled",true);
+
+                        if(pay_type == 1){
+                            $.ajax({
+                                type:"post",
+                                url:dlcUrl()+'user_api/pay_order',
+                                dataType:'json',
+                                data:{number:data.data.number,pay_type:pay_type},
+                                success:function(res){
+                                    console.log(res);
+                                    $('.confirm').attr("disabled",false);
+                                    if(res.code=='1'){
+                                        location.href='pay_success.html';
+                                    }else{
+                                        off=0;
+                                        location.href='pay_fail.html';
+                                    }
+                                }
+                            })
+                        }else{
+                            $.ajax({
+                                type:"post",
+                                url:dlcUrl()+'user_api/pay_order',
+                                dataType:'json',
+                                data:{number:data.data.number,pay_type:pay_type},
+                                success:function(res){
+                                    $('.confirm').attr("disabled",false);
+                                    jsApiParameters = res.data
+                                    callpay()
+                                }
+                            })
+                        }
+
+                    })
+
+
+
+
+                }
+			}
+		})
+
+
+
+
+        // 提交支付信息
+        var jsApiParameters = {};
+        //调用微信JS api 支付
+        function jsApiCall()
+        {
+            WeixinJSBridge.invoke(
+                'getBrandWCPayRequest',
+                jsApiParameters, // 提交的支付信息
+                function(res){
+                    WeixinJSBridge.log(res.err_msg);
+                    if(res.err_msg === 'get_brand_wcpay_request:ok'){
+                        tooltipbox.show('支付成功');
+                        location.href='pay_success.html';
+                    }else{
+                        off=0;
+                        tooltipbox.show("取消支付")
+                    }
+                }
+            );
+        }
+        //调用微信 支付
+        function callpay()
+        {
+            if (typeof WeixinJSBridge == "undefined"){
+                if( document.addEventListener ){
+                    document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+
+                }else if (document.attachEvent){
+                    document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+                    document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+                }
+            }else{
+                jsApiCall();
+            }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+	})
+
+
+	
+
+</script>

@@ -1,0 +1,410 @@
+/************作者:陈之勇*********************/
+.color-cce198{
+	color: #cce198;
+}
+.color-ff8392{
+	color: #ff8392;
+}
+.color-0db7d0{
+	color: #0db7d0;
+}
+.mask{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,.5);
+	z-index: 99;
+	display: none;
+}
+.confirm{
+    display: block;
+    width: 90%;
+    margin: 0 auto;
+    height: 0.88rem;
+    line-height: 0.88rem;
+    border-radius: 0.44rem;
+    background: #cce198;
+    color: #fff;
+    border: none;
+    font-size: 0.32rem;	
+    text-align: center;
+}
+.confirm:active{
+	background: #ccc;
+}
+.back{
+	width: 7%;
+	padding: 2% 3%;
+}
+.lineH{
+	height: 0.4rem;
+	line-height: 0.4rem;
+	flex: 1;
+}
+
+.L-block{
+	background: #fff;
+}
+.L-block-name{
+	display: inline-block;	
+    width: 1.55rem;
+}
+.L-block-input{
+    border: none;
+    line-height: 1rem;
+    height: 1rem;	
+}
+.L-block-input::-webkit-input-placeholder{
+	font-size: #999;
+}
+.border-bottom{
+	border-bottom: 1px solid #e5e5e5;
+}
+.allBtn{
+	height: 1rem;
+	line-height: 1rem;
+	text-align: center;
+}
+/************zy_search*******************/
+.search_ul{
+	background: #fff;
+}
+.search_ul a{
+	padding: 0 0.24rem;
+	height: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+.search_ul a p{
+	margin-top: 0.1rem;
+}
+.search_ul a p span{
+    margin-right: 0.2rem;	
+}
+.search_ul a+a{
+	border-top: 1px solid #e5e5e5;	
+}
+.hd_search {
+     width: 100%; 
+    background: #cce198;
+    z-index: 999999;
+    padding: 2% 0;
+    display: flex;
+    align-items: center;
+}
+
+.hd_search>div {
+	flex: 1;
+	background: #fff;
+	padding: 2% 3%;
+	border-radius: 44px;
+	display: flex;
+	align-items: center;
+	 margin: 0 3%;
+}
+.hd_search>div input{
+	flex: 1;
+	border: none;
+	color: #333;
+	font-size: 0.3rem;	
+}
+.hd_search>div input::-webkit-input-placeholder{
+	color: #999;
+	font-size: 0.28rem;		
+}
+.hd_search>div img {
+	width: 6%;
+	margin-right: 4%;
+}
+/************shop_data*******************/
+.shop_img{
+	width: 100%;
+	height: 3.5rem;
+}
+.macnoBox{
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 0.75rem;
+	background: rgba(0,0,0,.5);
+}
+.macnoBox img {
+	vertical-align: sub;
+}
+.shop_dataBox img{
+	width:0.35rem;
+}
+.shop_dataBox div + div{
+	border-top: 1px solid #e5e5e5;
+}
+/************charging_type*******************/
+.chargingBox{
+	background: #fff;
+}
+.chargingBox .active{
+	color: #cce198;
+}
+.chargingBox label{
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	padding: 0.58rem 0;
+}
+.checks{
+	border: 1px solid #ccc;
+	display: inline-block;
+	width: 0.3rem;
+	height: 0.3rem;
+	border-radius: 50%;
+}
+.radios[type=radio]:checked + span{
+	background: url(../img/true.png) no-repeat center center;
+	background-size: 100% 100%;
+}
+/***********************zy_person_ceter****************************/
+.headerImgBox{
+	height: 3.8rem;
+	background: #cce198;
+}
+.headerBox img{
+	width: 1.47rem;
+	height: 1.47rem;
+	border-radius: 50%;
+	margin-bottom: 0.2rem;
+}
+.person_list{
+	background: #fff;
+}
+.person_list a{
+	padding: 4% 0.24rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.person_list a + a{
+	border-top: 1px solid #e5e5e5;
+}
+.person_list a span img{
+	width: 0.3rem;
+	margin-right: 0.2rem;
+}
+.right{
+	width: 0.2rem;
+}
+/******************zy_person_data*********************/
+.hd_img{
+	width: 1.31rem;
+	height: 1.31rem;
+	border-radius: 50%;
+}
+.dataBox div + div{
+	border-top: 1px solid #e5e5e5;
+}
+
+.gaiNameWin{
+    position: fixed;
+    left: calc(15% - 0.34rem);
+    top: calc(50% - 1.7rem);
+    z-index: 10001;
+    background: #fff;
+    width: 70%;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0.4rem 0.34rem;
+    display: none;
+}
+.gaiNameBox{
+	width: 100%;
+}
+.gaiNameBox .name{
+	width: calc(100% - 0.5rem);
+	height: 0.78rem;
+	line-height: 0.8rem;
+	color: #333;
+	font-size: 0.3rem;
+	border: 1px solid #e5e5e5;
+	border-radius: 0.05rem;
+	padding-left: 0.2rem;
+	padding-right: 0.3rem;
+	margin: 0.3rem 0;
+}
+.gaiNameBox .name::-webkit-input-placeholder{
+	color: #999;
+}
+.choseBox span{
+	border: 1px solid #cce198;
+	width: 1.86rem;
+	height: 0.75rem;
+	line-height: 0.75rem;
+	text-align: center;
+	border-radius: 0.44rem;
+}
+/******************my_wallet*********************/
+.walletBox .walletImg{
+	width: 0.4rem;
+}
+.deposit{
+	color: #fff;
+    background: #f1c345;
+    padding: 0.1rem 0.2rem;
+    border-radius: 0.44rem;	
+}
+.deposit:active{
+	background: #ccc;
+}
+.walletBox div + div{
+	border-top: 1px solid #e5e5e5;
+}
+.walletBox .active{
+	display: none;
+}
+/******************deposit*********************/
+.depositBox{
+	width: 1.84rem;
+	height: 1.84rem;
+	border-radius: 50%;
+	background: #fff;
+}
+.tui_depositWin{
+	position: fixed;
+    left: 15%;
+    top: calc(50% - 1.94rem);
+    z-index: 10001;
+    background: #fff;
+    width: 70%;
+    border-radius: 5px;
+    display: none;
+}
+.tui_depositMoney{
+    width: 100%;
+    background: #cce198;
+    text-align: center;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    padding: 0.3rem 0;
+    color: #fff;	
+}
+.tui_depositMoney img{
+	width: 1.13rem;
+}
+/******************details*********************/
+.detailsBox ul{
+	background: #fff;
+}
+.detailsBox ul li{
+	background: #fff;
+	display: flex;
+	align-items: center;
+}
+.detailsBox ul li + li{
+	border-top: 1px solid #e5e5e5;
+}
+/******************recharge*********************/
+.recharge_chose div{
+    height: 1.2rem;
+    width: 2.2rem;
+    border: 1px dotted #e5e5e5;
+    background: #fff;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 0.1rem;
+    margin-left: 0.2rem;
+    margin-bottom: 0.2rem;	
+}
+.recharge_chose .active{
+	color: #ffcc00;
+	border: 1px solid #ffcc00;
+	background: #fffae4;
+}
+.rechargeBox{
+	background: #fff;
+    margin: 0 0.2rem;
+    padding: 0 0.4rem 0.7rem 0.4rem;	
+}
+.rechargeBox p:first-child{
+    padding: 0.4rem 0;	
+}
+.rechargeBox input{
+	line-height: 0.8rem;
+    height: 0.8rem;
+    border: none;	
+    color: #333;
+    font-size: 0.32rem;
+}
+.rechargeBox input::-webkit-input-placeholder{
+	color: #999;
+}
+/********************order*****************************/
+.tabs {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 99;
+    background: #37363b;
+}
+.tabs .active {
+    color: #cce198;
+    border-bottom: 0.04rem solid #cce198;
+}
+.tabs div {
+    flex: 1;
+    text-align: center;
+    line-height: 1rem;
+    color: #fff;
+}
+.tabs div span{
+	height: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 1.2rem;	
+}
+.order_content ul li{
+	background: #fff;	
+}
+/*****************bd_phone**************************/
+.bdBox{
+	background: #fff;
+	margin-bottom: 1.2rem;
+}
+.bdBox div{
+	height: 1rem;
+	display: flex;
+	align-items: center;
+	margin: 0 0.24rem;
+}
+.bdBox div+div{
+	border-top: 1px solid #e5e5e5;
+}
+.bdBox div input{
+	flex: 1;
+	border: none;
+	font-size: 0.3rem;
+	color: #333;
+}
+.bdBox div input::-webkit-input-placeholder{
+	color: #999;
+	font-size: 0.3rem;
+}
+.get_yzm{
+	border: none;
+	width: 1.8rem;
+	height: 0.6rem;
+	background: #cce198;
+	color: #fff;
+	font-size: 0.28rem;
+	border-radius: 44px;
+}

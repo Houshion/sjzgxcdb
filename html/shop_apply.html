@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>商家合作</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />
+		<style>
+			.LR-block input{
+			    border: none;
+			    height: 1rem;
+			    line-height: 1rem;
+			    text-align: right;	
+			}
+			.LR-block input::-webkit-input-placeholder{
+				color: #999;
+			}
+			.shop_apply div + div{
+				border-top:1px solid #e5e5e5 ;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="shop_apply background-fff">
+			<div class="LR-block marginTop-20 marginLR-20">
+				<span class="color-333 font-15">所在城市</span><input type="text" id="city" placeholder="请输入所在城市" class="color-333 font-15" value="" />
+			</div>
+			<div class="LR-block marginLR-20">
+				<span class="color-333 font-15">行政区域</span><input type="text" id="areas" placeholder="请输入行政区域" class="color-333 font-15" value="" />
+			</div>
+			<div class="LR-block marginTop-20 marginLR-20">
+				<span class="color-333 font-15">门店名称</span><input type="text" id="shop_name" placeholder="请输入门店名称" class="color-333 font-15" value="" />
+			</div>
+			<div class="LR-block marginTop-20 marginLR-20">
+				<span class="color-333 font-15">门店地址</span><input type="text" id="shop_addr" placeholder="请输入门店地址" class="color-333 font-15" value="" />
+			</div>
+			<div class="LR-block marginTop-20 marginLR-20">
+				<span class="color-333 font-15">联系人</span><input type="text" id="name" placeholder="请输入联系人" class="color-333 font-15" value="" />
+			</div>
+			<div class="LR-block marginTop-20 marginLR-20">
+				<span class="color-333 font-15">联系电话</span><input type="number" id="phone" placeholder="请输入联系电话" class="color-333 font-15" value="" />
+			</div>
+		</div>
+		<div class="confirm" style="margin-top: 1.2rem;">提交</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+	$(function(){
+		var off=0;
+		$('.confirm').click(function(){
+			var city=$('#city').val();
+			var areas=$('#areas').val();
+			var shop_name=$('#shop_name').val();
+			var shop_addr=$('#shop_addr').val();
+			var name=$('#name').val();
+			var phone=$('#phone').val();
+			if(isNull(city)){
+				tooltipbox.show('请输入所在城市');
+			}else if(isNull(areas)){
+				tooltipbox.show('请输入行政区域');
+			}else if(isNull(shop_name)){
+				tooltipbox.show('请输入门店名称');
+			}else if(isNull(shop_addr)){
+				tooltipbox.show('请输入门店地址');
+			}else if(isNull(name)){
+				tooltipbox.show('请输入联系人');
+			}else if(isNull(phone)){
+				tooltipbox.show('请输入联系电话');
+			}else if(!checkMobileAndTel(phone)){
+				tooltipbox.show('请输入正确的联系电话');
+			}else{
+				if(off){
+					return false;
+				}
+				off=1;
+				$.ajax({
+					type:"POST",
+					data:{
+						city:city,
+						area:areas,
+						shop_name:shop_name,
+						shop_address:shop_addr,
+						contacts:name,
+						phone:phone,
+					},
+					url:dlcUrl()+"user_api/seller_apply",
+					dataType:'json',
+					success:function(data){
+						console.log(data);
+						if(data.code=='1'){
+							tooltipbox.show('提交成功');
+							setTimeout(function(){
+								location.href='checking.html';  
+							},1500);
+						}else{
+							off=0;
+							tooltipbox.show(data.msg);
+						}
+					}
+				});				
+			}
+		})
+	})
+</script>

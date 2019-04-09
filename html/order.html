@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>订单管理</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../js/drop/dropload.css" />
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />		
+		<style type="text/css">
+			.order_content{
+				padding-top: 1rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="tabs font-15">
+			<div><span class="active">进行中</span></div><div><span>已完成</span></div>
+		</div>		
+		<div class="order_content">
+			<ul>
+				<!--<li class="marginTop-20 paddingLR-24 font-15">
+					<div class="paddingTB-4 marginLeft-20 border-bottom flex-center">
+						<img src="../img/shop.png" style="width: 0.4rem;"/><span class="font-15 color-333 marginLeft-20">编号:002230</span>
+					</div>
+					<div class="paddingTB-4 marginLeft-20 color-999 font-15 ">
+						<span class="marginRight-20">租借时间:</span><i>2017-11-08 13:30</i>
+					</div>
+				</li>
+				<li class="marginTop-20 paddingLR-24 font-15">
+					<div class="paddingTB-4 marginLeft-20 border-bottom flex-center">
+						<img src="../img/shop.png" style="width: 0.4rem;"/><span class="font-15 color-333 marginLeft-20">编号:002230</span>
+					</div>
+					<div class="paddingTB-4 marginLeft-20 color-999 font-15 border-bottom">
+						<p class="marginBottom-10">租借时间:<i>2017-11-08 13:30</i></p>
+						<p>结束时间:<i>2017-11-08 15:30</i></p>
+					</div>
+					<div class="paddingTB-4 flex-center"  style="justify-content: flex-end;">
+						<span class="font-15 color-333 color-ff8392">￥10.00</span>
+					</div>
+				</li>-->
+			</ul>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/drop/dropload.min.js"></script>
+<script>
+	var yong='',type=0;
+	var orderId='';
+// // 页数
+    var page = 0;
+//// 每页展示10个
+    var size = 10;
+	$(function(){
+		
+		
+
+
+		$('.tabs').on('click','div',function(){
+			var index=$(this).index();
+			console.log(index);
+			type=index;
+			$(this).children().addClass('active').parent().siblings().children().removeClass('active');
+			page=0;
+			if(index=='0'){
+				type=0;
+			}
+			getData(yong);
+		});
+		
+		   
+		   // dropload
+	   $('.order_content').dropload({
+	        scrollArea : window,
+	        domDown : {
+	            domClass   : 'dropload-down',
+	            domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+	            domLoad    : '<div class="dropload-load"><span class="loadings"></span>加载中...</div>',
+	            domNoData  : '<div class="dropload-noData">暂无数据</div>'
+	        },
+	        loadDownFn : function(me){
+	        	yong=me;
+	        	getData(yong);
+	        },
+	
+	        threshold : 50
+	    });
+	    		
+	
+	})
+	
+	function getData(me){
+        page++;
+        if(page==1){
+        	loadingShow();
+        }
+        console.log(page+','+type)
+        // 拼接HTML
+        var result = '';
+        $.ajax({
+           type: 'POST',
+            data:{page:page,pagesize:size,status:type},  
+            url:  dlcUrl()+'user_api/my_order',   
+            dataType: 'json',
+            success: function(data){
+            	console.log(data);
+                var arrLen = data.data.list.length;
+                var res=data.data.list;
+                if(arrLen>0){
+                  for(var i in res){
+	                    result +='<li class="marginTop-20 paddingLR-24 font-15">'+
+									'<div class="paddingTB-4 marginLeft-20 border-bottom flex-center">'+
+										'<img src="../img/shop.png" style="width: 0.4rem;"/><span class="font-15 color-333 marginLeft-20">编号:'+res[i].orderno+'</span>'+
+									'</div>';
+									if(res[i].status==0){
+										result +='<div class="paddingTB-4 marginLeft-20 color-999 font-15 ">'+
+													'<span class="marginRight-20">租借时间:</span><i>'+format(res[i].start_time,'Y-m-d H:i')+'</i>'+
+												'</div>';	
+									}else{
+										result +='<div class="paddingTB-4 marginLeft-20 color-999 font-15 border-bottom">'+
+													'<p class="marginBottom-10">租借时间:<i>'+format(res[i].start_time,'Y-m-d H:i')+'</i></p>'+
+													'<p>结束时间:<i>'+format(res[i].end_time,'Y-m-d H:i')+'</i></p>'+
+												'</div>'+
+												'<div class="paddingTB-4 flex-center"  style="justify-content: flex-end;">'+
+													'<span class="font-15 color-333 color-ff8392">￥'+res[i].money+'</span>'+
+												'</div>'; 
+									}
+								result +='</li>';
+					}
+                }else{
+                	// 锁定
+                    me.lock();
+//                      // 无数据
+                    me.noData();
+                }
+                // 为了测试，延迟1秒加载
+                setTimeout(function(){
+                    // 插入数据到页面，放到最后面
+                    loadingHide()
+                    if(page==1){
+                    	$('.order_content ul').html(result);
+                    }else{
+                    	$('.order_content ul').append(result);
+                    }
+                    // 每次数据插入，必须重置
+                    me.resetload();
+                },1000);
+            }
+        });		 	
+	 }
+
+</script>

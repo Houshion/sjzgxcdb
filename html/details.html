@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>明细</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../js/drop/dropload.css" />
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />			
+	</head>
+	<body>
+		<div class="detailsBox">
+			<ul>
+				<!--<li class="font-15 paddingTB-3 marginLR-20">
+					<div class="flex-1">
+						<p class="color-333 marginBottom-10">充电</p>
+						<p class="color-999">2017-10-25 15:00</p>
+					</div>
+					<em class="color-ff8392">-158.00元</em>
+				</li>
+				<li class="font-15 paddingTB-3 marginLR-20">
+					<div class="flex-1">
+						<p class="color-333 marginBottom-10">微信充值</p>
+						<p class="color-999">2017-10-25 16:00</p>
+					</div>
+					<em class="color-0db7d0">+158.00元</em>
+				</li>-->
+			</ul>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script type="text/javascript" src="../js/drop/dropload.min.js"></script>
+<script>
+// 页数
+ var page = 0;
+// 每页展示10个
+ var size = 10;
+
+ // dropload
+ $('.detailsBox').dropload({
+     scrollArea : window,
+     domUp : {
+         domClass   : 'dropload-up',
+         domRefresh : '<div class="dropload-refresh">↓下拉刷新</div>',
+         domUpdate  : '<div class="dropload-update">↑释放更新</div>',
+         domLoad    : '<div class="dropload-load"><span class="loadings"></span>加载中...</div>'
+     },
+     domDown : {
+         domClass   : 'dropload-down',
+         domRefresh : '<div class="dropload-refresh">↑上拉加载更多</div>',
+         domLoad    : '<div class="dropload-load"><span class="loadings"></span>加载中...</div>',
+         domNoData  : '<div class="dropload-noData">暂无数据</div>'
+     },
+     loadUpFn : function(me){
+         $.ajax({
+             type: 'POST',
+             data:{page:1,pagesize:size},
+             url:  dlcUrl()+'user_api/consume_history',
+             dataType: 'json',
+             success: function(data){
+             	console.log(data)
+                 var result = '';
+                 for(var i = 0; i < data.data.list.length; i++){
+                 	result+='<li class="font-15 paddingTB-3 marginLR-20">'+
+								'<div class="flex-1">'+
+									'<p class="color-333 marginBottom-10">'+(data.data.list[i].type=='5'?'充电消费':data.data.list[i].type=='4'?'自助消费':data.data.list[i].type=='3'?'退还押金':data.data.list[i].type=='2'?'奖励':data.data.list[i].type=='1'?'缴纳押金':'充值')+'</p>'+
+									'<p class="color-999">'+(format(data.data.list[i].paytime,'Y-m-d H:i:s'))+'</p>'+
+								'</div>'+
+								'<em class="'+(data.data.list[i].type=='3' || data.data.list[i].type=='4' || data.data.list[i].type=='5'?'color-ff8392':'color-0db7d0')+'">'+(data.data.list[i].type=='3' ||data.data.list[i].type=='4' || data.data.list[i].type=='5'?'-':'+')+(data.data.list[i].money)+'元</em>'+
+							'</li>'	;
+                 }
+                 // 为了测试，延迟1秒加载.
+                 setTimeout(function(){
+                      $('.detailsBox ul').html(result);
+                     // 每次数据加载完，必须重置
+                     me.resetload();
+                     // 重置页数，重新获取loadDownFn的数据
+                     page = 1;
+                     // 解锁loadDownFn里锁定的情况
+                     me.unlock();
+                     me.noData(false);
+                 },1000);
+             },
+         });
+     },
+     loadDownFn : function(me){  
+         page++;
+         // 拼接HTML
+         var result = '';
+         $.ajax({
+            type: 'POST',
+             data:{page:page,pagesize:size},
+            url:  dlcUrl()+'user_api/consume_history',   
+             dataType: 'json',
+             success: function(data){
+             	console.log(data);
+             /*	alert(JSON.stringify(data))*/
+                 var arrLen = data.data.list.length;
+                 if(arrLen > 0){
+                     for(var i=0; i<arrLen; i++){
+                 	result+='<li class="font-15 paddingTB-3 marginLR-20">'+
+								'<div class="flex-1">'+
+									'<p class="color-333 marginBottom-10">'+(data.data.list[i].type=='5'?'充电消费':data.data.list[i].type=='4'?'自助消费':data.data.list[i].type=='3'?'退还押金':data.data.list[i].type=='2'?'奖励':data.data.list[i].type=='1'?'缴纳押金':'充值')+'</p>'+
+									'<p class="color-999">'+(format(data.data.list[i].paytime,'Y-m-d H:i:s'))+'</p>'+
+								'</div>'+
+								'<em class="'+(data.data.list[i].type=='3' || data.data.list[i].type=='4' || data.data.list[i].type=='5'?'color-ff8392':'color-0db7d0')+'">'+(data.data.list[i].type=='3' || data.data.list[i].type=='4' || data.data.list[i].type=='5'?'-':'+')+(data.data.list[i].money)+'元</em>'+
+							'</li>'	;
+					}	
+                 // 如果没有数据
+                 }else{
+                     // 锁定
+                     me.lock();
+                     // 无数据
+                     me.noData();
+                 }
+                 // 为了测试，延迟1秒加载
+                 setTimeout(function(){
+                     // 插入数据到页面，放到最后面
+                     $('.detailsBox ul').append(result);
+                     // 每次数据插入，必须重置
+                     me.resetload();
+                 },1000);
+             },
+         });
+     },
+     threshold : 50
+ });
+
+</script>

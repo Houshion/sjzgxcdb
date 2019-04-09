@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的钱包</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />	
+		<style>
+			.choseBox span{
+				height: 0.6rem;
+   				line-height: 0.6rem;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="headerImgBox flex-center justify-center" style="overflow: hidden;height: 3.18rem;">
+			<div class="headerBox  text-center">
+				<p class="inline-block color-fff user_money" style="font-size: 0.5rem;margin-bottom: 0.3rem;">0元</p> 
+				<p class="color-fff">我的余额 (元)</p>
+			</div>
+		</div>
+		<div class="marginTop-20 walletBox">
+			<!--未缴押金-->
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15 deposit_status_no active">
+				<em class="flex-center"><img src="../img/ic_money.png" class="walletImg marginRight-20"/><i class="color-333 marginRight-20">我的押金</i></em>
+				<span class="flex-center"><span class="color-999" id="foregift_no">￥0元</span><a href="deposit.html" class="deposit marginLR-20">充值押金</a><img src="../img/arrow_right.png" class="right"/></span>
+			</div>
+			<!--退押金-->
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15 deposit_status_yes active">
+				<em class="flex-center"><img src="../img/ic_money.png" class="walletImg marginRight-20"/><i class="color-333 marginRight-20">我的押金</i></em>
+				<span class="flex-center"><span class="color-999" id="foregift">￥99.00元</span><a class="deposit marginLR-20 depositButton">申请退押金</a><img src="../img/arrow_right.png" class="right"/></span>
+			</div>
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15" onclick="location.href='recharge.html'">
+				<em class="flex-center"><img src="../img/ic_charge.png" class="walletImg marginRight-20"/><i class="color-333 marginRight-20">充值</i></em>
+				<img src="../img/arrow_right.png" class="right"/>
+			</div>
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15" onclick="location.href='details.html'">
+				<em class="flex-center"><img src="../img/ic_detail.png" class="walletImg marginRight-20"/><i class="color-333 marginRight-20">明细</i></em>
+				<img src="../img/arrow_right.png" class="right"/>
+			</div>
+		</div>
+		<!--退押金弹窗-->
+		<div class="mask"></div>
+		<section class="tui_depositWin">
+			<div class="tui_depositMoney">
+				<img src="../img/deposit_logo.png"/>
+				<p class="marginTop-10 font-15" id="yaJin">押金 99元</p>
+			</div>
+			<div class="font-15 color-333 paddingTB-4 text-center">确认要退还押金？</div>
+			<div class="choseBox flex-center font-15 justify-between paddingLR-24 paddingBottom-20">
+				<span class="color-fff close" style="background: #cce198;">取消</span>
+				<span class="color-cce198"  id="confirm">押金退换</span>
+			</div>
+		</section>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+	$(function(){
+		$.ajax({
+	        type: 'POST',
+	        url:dlcUrl()+'user_api/get_userinfo',
+			dataType:'json',
+	        success: function(data){
+	        	console.log(data);
+	        	if(data.code=='1'){
+	        		$('.user_money').text(data.data.money);
+	        		//押金状态
+	        		if(data.data.foregift=='0.00'){//未缴押金
+	        			$('#foregift_no').text('￥'+data.data.foregift+'元');
+	        			$('.deposit_status_no').css('display','flex');
+	        		}else{//已缴押金
+	        			$('#foregift').text('￥'+data.data.foregift+'元');
+	        			$('#yaJin').text('押金'+data.data.foregift+'元');
+	        			$('.deposit_status_yes').css('display','flex');
+	        		}
+	        	}else{
+	        		tooltipbox.show('获取个人信息失败');
+	        	}
+	        }
+         })
+		
+	    $('.depositButton').click(function(){
+	    	$('.mask,.tui_depositWin').fadeIn(300);
+	    })
+	    
+	     $('.mask,.close').click(function(){
+	    	$('.mask,.tui_depositWin').fadeOut(300);
+	    })
+	     
+	     $('#confirm').click(function(){
+     		$.ajax({
+		        type: 'POST',
+		        url:dlcUrl()+'user_api/get_back_info',
+				dataType:'json',
+		        success: function(data){
+		        	console.log(data);
+		        	$('.mask,.tui_depositWin').fadeOut(300);
+		        	if(data.code=='1'){
+		        		setTimeout(function(){
+		        			location.href='tui_success.html'
+		        		},2000)
+		        	}else{
+		        		tooltipbox.show(data.msg);
+		        	}
+		        }
+         })
+	     })
+		
+	})
+</script>

@@ -1,0 +1,250 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<title>附近</title>
+	<link rel="stylesheet" type="text/css" href="../css/zy_common.css"/>
+	<link rel="stylesheet" type="text/css" href="../css/zy_index.css"/>
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<script type="text/javascript" src="../js/tooltipbox.js"></script>
+	<script type="text/javascript" src="../js/dlc.js" ></script>
+	<style>
+		div[onpositionupdate="return;"],div[draggable="false"]{display: none;}
+	</style>
+</head>
+<body>
+	<div id="allmap"></div>
+	<a id="list" href="zy_person_center.html">
+		<img src="../img/person.png"/>
+	</a>
+	<div id="tool">
+		<p class="getlocal"><img src="../img/location.png" style="width: 75%;"/></p>
+		<div id="scanQRCode1" style="visibility:hidden"><img src="../img/sao.png"/></div>
+		<a class="tel" id="sell_list"><img src="../img/nearby.png" alt="" style="width: 75%;"/></a>
+	</div>
+	<!--搜索框-->
+	<header class="hd_search" id="hd_search">
+		<a><img src="../img/search.png"/><span>请输入搜索内容</span></a>
+	</header>
+	
+	<!--详情-->
+	<section class="Using_details" style="display: none;">
+		<!--<div class="shop_details flex-center marginLR-20 paddingTB-3 border_bottom">
+			<img src="../img/bg1.png" style="width: 1.76rem;height: 1.3rem;margin-right: 0.2rem;"/>
+			<div class="flex-1">
+				<p class="font-15 color-333">广东东莞南城高盛科技22号</p>
+				<p class="font-14 color-999"><img src="../img/time.png" /><span>10:00-20:00</span></p>
+				<p class="font-14 color-999"><img src="../img/s_location.png" /><span>广东东莞南城高盛科技路</span></p>
+			</div>
+		</div>
+		<div class="flex-center  marginLR-20 justify-between color-999 font-14">
+			<span>设备编号:&nbsp;0225</span>
+			<span><img src="../img/an.png"  style="width: 0.3rem;"/>&nbsp;20</span>
+			<span><img src="../img/ios.png"  style="width: 0.26rem;"/>&nbsp;20</span>
+			<span>可归还&nbsp;50</span>
+		</div>-->
+	</section>
+
+</body>
+</html>
+<script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp"></script>
+<script type="text/javascript" src="https://3gimg.qq.com/lightmap/components/geolocation/geolocation.min.js"></script>
+<script type="text/javascript">
+	var geolocation = new qq.maps.Geolocation("N6RBZ-AJN35-AACI2-Q2ICF-HYV6O-JRBBZ", "myapp");
+	var options = {
+		timeout: 4000
+	};
+	$('.getlocal').click(function(){
+		location.reload();
+		location.replace('./nearby.html');
+	});
+	var lng='',lat='',seller_id='';
+	loadingShow();
+	var id=getUrlParam('id');
+		if(id==1){//详情
+			console.log(getUrlParam('seller_id'));
+			$('.Using_details').show();
+//				获取详情
+			$.ajax({
+				type:"POST",
+				data:{seller_id:getUrlParam('seller_id')},
+				url:dlcUrl()+"user_api/seller_detail",
+				dataType:'json',
+				success:function(data){
+					console.log(data);
+					var str='';
+					if(data.code=='1'){
+						seller_id=data.data.seller_id;
+						str='<div class="shop_details flex-center marginLR-20 paddingTB-3 border_bottom">'+
+							'<img src="'+data.data.img+'" style="width: 1.76rem;height: 1.3rem;margin-right: 0.2rem;"/>'+
+							'<div class="flex-1">'+
+								'<p class="font-15 color-333">'+data.data.agentname+'</p>'+
+								'<p class="font-14 color-999"><img src="../img/time.png" /><span>'+data.data.work_hours+'</span></p>'+
+								'<p class="font-14 color-999"><img src="../img/s_location.png" /><span>'+data.data.addr+'</span></p>'+
+							'</div>'+
+						'</div>'+
+						'<div class="flex-center  marginLR-20 justify-between color-999 font-14">'+
+							'<span>设备编号:&nbsp;'+data.data.macno+'</span>'+
+							'<span><img src="../img/an.png"  style="width: 0.3rem;"/>&nbsp;'+data.data.androids+'</span>'+
+							'<span><img src="../img/ios.png"  style="width: 0.26rem;"/>&nbsp;'+data.data.apples+'</span>'+
+							'<span>可归还&nbsp;'+data.data.frees+'</span>'+
+						'</div>';
+						$('.Using_details').html(str)
+				}
+				}
+			});
+		}
+	function showPosition(position) {
+		console.log(position);
+		lat=position.lat;
+		lng=position.lng;
+		center = new qq.maps.LatLng(lat,lng);
+		map = new qq.maps.Map(document.getElementById('allmap'),{
+			center: center,
+			zoom: 14,
+			zoomControl: false,
+			draggable: true,//手势控制, 用来设置地图是否能够鼠标拖拽，默认值为“可以”；
+			scrollwheel: false,//用来配置地图是否能够通过鼠标滚轮操作进行放大，默认值为“可以”；
+			disableDoubleClickZoom: false// 用来配置地图是否可以通过鼠标双击进行放大，默认值为“可以”。
+		});
+		qq.maps.event.addListener(map, 'center_changed', function() {//地图中心发生变化
+			$('.Using_details').hide();
+			$('#hd_search').show();
+		});
+		//创建marker
+		var my_pos = new qq.maps.Marker({
+			position: center,
+			map: map
+		});
+
+		//自定义标注图标
+		var anchor = new qq.maps.Point(45, 45),
+				size = new qq.maps.Size(90,90),
+				origin = new qq.maps.Point(0, 0),
+				markerIcon = new qq.maps.MarkerImage(
+						"../img/ic_location.png",
+						size,
+						origin,
+						anchor
+				);
+		my_pos.setIcon(markerIcon);
+		$('#sell_list').click(function(){
+			window.location.href='zy_nearby.html?lng='+lng+'&lat='+lat;
+		});
+		$('#hd_search').click(function(){
+			window.location.href='zy_search.html?lng='+lng+'&lat='+lat;
+		});
+		//关闭使用弹窗
+		$('.mask1').on('click',function(){
+			$(this).hide();
+			$('.use_win').hide();
+		});
+		//
+		$('#userBtn').on('click',function(){
+			$('.mask1').hide();
+			$('.use_win').hide();
+		});
+
+		//关闭押金弹窗
+		$('.mask2').on('click',function(){
+			$(this).hide();
+			$('.user_win1').hide();
+		});
+		//关闭充值弹窗
+		$('.mask2').on('click',function(){
+			$(this).hide();
+			$('.user_win2').hide();
+		});
+		//关闭弹出电源弹窗
+		$('.mask4').on('click',function(){
+			$(this).hide();
+			$('.user_win3').hide();
+		});
+		//关闭结束费用弹窗
+		$('.mask5').on('click',function(){
+			$(this).hide();
+			$('.user_win4').hide();
+		});
+		//跳转到详情
+		$('.Using_details').click(function(){
+			location.href='shop_data.html?seller_id='+seller_id;
+		})
+		$.ajax({
+			type:"post",
+			url:dlcUrl()+'user_api/nearby_seller',
+			dataType:'json',
+			data:{lat:lat,lng:lng},
+			success:function(res){
+				loadingHide();
+				var ret=[];markers=[];
+				for(i in res.data) {
+					ret.push({'lng':res.data[i].lng,'lat':res.data[i].lat,'macno':res.data[i].macno,'addr':res.data[i].addr,'name':res.data[i].agentname,'work_hours':res.data[i].work_hours,'androids':res.data[i].androids,'apples':res.data[i].apples,'frees':res.data[i].frees,'img':res.data[i].img,'seller_id':res.data[i].seller_id});
+				}
+				for(var i in ret){
+					var logo1 = new qq.maps.LatLng(ret[i].lat,ret[i].lng);
+					//创建marker
+					var logo = new qq.maps.Marker({
+						position: logo1,
+						map: map,
+						zIndex:1
+					});
+					//自定义标注图标
+					var anchor = new qq.maps.Point(24,26),
+							size = new qq.maps.Size(48,52),
+							origin = new qq.maps.Point(0, 0),
+							markerIcon = new qq.maps.MarkerImage(
+									"../img/logo.png",
+									size,
+									origin,
+									anchor
+							);
+					logo.setIcon(markerIcon);
+					//设置属性
+					logo.lat=ret[i].lat;
+					logo.lng=ret[i].lng;
+					logo.macno=ret[i].macno;
+					logo.addr=ret[i].addr;
+					logo.name=ret[i].name;
+					logo.work_hours=ret[i].work_hours;
+					logo.androids=ret[i].androids;
+					logo.apples=ret[i].apples;
+					logo.frees=ret[i].frees;
+					logo.img=ret[i].img;
+					logo.seller_id=ret[i].seller_id;
+					//获取标记的点击事件
+					qq.maps.event.addListener(logo, 'click', function(e){
+						console.log(e);
+						$('.Using_details').show();
+						$('#hd_search').hide();
+						var str='';
+						seller_id= e.target.seller_id;
+						console.log(seller_id)
+						str='<div class="shop_details flex-center marginLR-20 paddingTB-3 border_bottom">'+
+								'<img src="'+ e.target.img+'" style="width: 1.76rem;height: 1.3rem;margin-right: 0.2rem;"/>'+
+								'<div class="flex-1">'+
+								'<p class="font-15 color-333">'+e.target.name+'</p>'+
+								'<p class="font-14 color-999"><img src="../img/time.png" /><span>'+ e.target.work_hours+'</span></p>'+
+								'<p class="font-14 color-999"><img src="../img/s_location.png" /><span>'+ e.target.addr+'</span></p>'+
+								'</div>'+
+								'</div>'+
+								'<div class="flex-center  marginLR-20 justify-between color-999 font-14">'+
+								'<span>设备编号:&nbsp;'+ e.target.macno+'</span>'+
+								'<span><img src="../img/an.png"  style="width: 0.3rem;"/>&nbsp;'+ e.target.androids+'</span>'+
+								'<span><img src="../img/ios.png"  style="width: 0.26rem;"/>&nbsp;'+ e.target.apples+'</span>'+
+								'<span>可归还&nbsp;'+ e.target.frees+'</span>'+
+								'</div>';
+						$('.Using_details').html(str);
+					});
+				}
+
+			},
+			error:function(err){
+				console.log(err)
+			}
+		});
+	}
+	function showErr(err) {
+		positionNum++;
+	};
+	geolocation.getLocation(showPosition, showErr, options);
+</script>

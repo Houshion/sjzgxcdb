@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<title>搜索</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />
+	</head>
+	<body>
+		<div class="bigBox">
+			<header class="hd_search">
+				<div><img src="../img/search.png" /><input type="search" placeholder="请输入搜索内容" id="search" autocomplete="off"/></div>
+			</header>
+			<div class="container">
+					<div class="search_ul">
+						<!--<a href="index.php?id=1&macno=0235">
+							<span class="color-333 font-15">广东东莞南城高盛科技22号</span>
+							<p class="font-14 color-999">
+								<span>设备号：<i>0235</i></span>
+								<span>剩余：<i>20</i></span>
+							</p>
+						</a>-->
+					</div>
+			</div>
+		</div>
+	</body>
+
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/tooltipbox.js"></script>
+<script src="../js/dlc.js"></script>
+<script type="text/javascript">
+	$(function(){	
+		$('#search').on('keyup',function(e){
+			var cot=$(this).val();
+			if(e.keyCode==13){
+				if($.trim(cot)==''){
+					tooltipbox.show('请输入搜索内容')
+				}else{
+					search(cot);
+				}
+			}
+		});
+		//跳转
+		$('.search_ul').on('click','a',function(){
+			loadingShow();//加载中
+			var seller_id=$(this).attr('seller_id');
+			window.location.href='shop_data.html?seller_id='+seller_id;  
+		});
+		
+		
+		getList();
+		
+
+
+	})
+
+//获取列表（没搜索的）
+function getList(){
+		loadingShow();//加载中
+		//请求列表
+		$.ajax({
+           type: 'POST',
+           data:{lat:getUrlParam('lat'),lng:getUrlParam('lng')},
+            url:dlcUrl()+'user_api/nearby_seller',
+			dataType:'json',
+            success: function(data){
+            	console.log(data);
+            	loadingHide();
+            	var result='';
+                if(data.code=='1'){
+                	var res=data.data;
+                	for(var i in res){
+                		result+='<a seller_id='+res[i].seller_id+'>'+
+									'<span class="color-333 font-15">'+res[i].addr+'</span>'+
+									'<p class="font-14 color-999">'+
+										'<span>设备号：<i>'+res[i].macno+'</i></span>'+
+										'<span>剩余：<i>'+res[i].cabinets+'</i></span>'+
+									'</p>'+
+								'</a>';  
+                	}
+                	if(result){
+                		$('.search_ul').html(result);
+                	}else{
+                		$('.search_ul').html(emptyTip('暂无内容'));
+                	}
+                }
+               
+            },
+        });
+}
+
+function search(cot){
+	loadingShow();
+	$.ajax({
+	   type: 'POST',
+	    data:{keywork:cot},
+	    url:  dlcUrl()+'user_api/search_seller',   
+	    dataType: 'json',
+	    success: function(data){
+	    	console.log(data);
+	    	loadingHide();
+	    	var result='';
+	        if(data.code=='1'){
+	        	var res=data.data;
+            	for(var i in res){
+            		result+='<a seller_id='+res[i].seller_id+'>'+
+								'<span class="color-333 font-15">'+res[i].addr+'</span>'+
+								'<p class="font-14 color-999">'+
+									'<span>设备号：<i>'+res[i].macno+'</i></span>'+
+									'<span>剩余：<i>'+res[i].cabinets+'</i></span>'+
+								'</p>'+
+							'</a>';  
+            	}
+	        	if(result){
+	        		$('.search_ul').css('background','#fff');
+	        		$('.search_ul').html(result);
+	        	}else{
+	        		$('.search_ul').css('background','#f5f5f5');  
+	        		$('.search_ul').html(emptyTip('你收到火星上去了'));
+	        	}
+	        }
+		}
+	});	
+}
+
+</script>

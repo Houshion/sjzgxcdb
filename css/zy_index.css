@@ -1,0 +1,174 @@
+body,
+html,
+#allmap {
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	margin: 0;
+	font-family: "微软雅黑";
+}
+
+body {
+	position: relative;
+}
+
+#list {
+	position: absolute;
+	height: 60px;
+	bottom: 100px;
+	left: 5px;
+	text-align: center;
+	width: 20%;
+}
+
+#list img {
+	width: 1.1rem;
+	height: 1.1rem;
+	border-radius: 50%;
+}
+
+#tool {
+	width: 100%;
+	position: absolute;
+	height: 70px;
+	bottom: 30px;
+	left: 0;
+	display: flex;
+	flex-flow: row wrap;
+	justify-content: space-around;
+	align-items: center;
+}
+
+#tool img {
+	width: 75%;
+}
+
+.getlocal {
+	width: 20%;
+	text-align: center;
+}
+
+#scanQRCode1 {
+	width: 50%;
+	text-align: center;
+}
+
+.tel {
+	width: 20%;
+	text-align: center;
+}
+
+.hd_search {
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 94%;
+	background: #cce198;
+	z-index: 999;
+	padding: 2% 3%;
+	display: flex;
+	align-items: center;
+}
+
+.hd_search a {
+	flex: 1;
+	background: #fff;
+	padding: 2% 3%;
+	border-radius: 44px;
+	display: flex;
+	align-items: center;
+	color: #999;
+	font-size: 13px;
+}
+
+.hd_search a img {
+	width: 6%;
+	margin-right: 4%;
+}
+
+.Using_details {
+	position: fixed;
+	top: 2%;
+	left: 3%;
+	width: 94%;
+	background: #fff;
+	z-index: 10000;
+}
+
+.shop_details div {
+	height: 1.3rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.Using_details>div:last-child {
+	height: 0.75rem;
+}
+
+.Using_details>div:last-child img {
+	vertical-align: sub;
+}
+
+.shop_details img {
+	width: 0.3rem;
+	vertical-align: sub;
+    margin-right: 0.2rem;
+}
+
+.mask {
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, .5);
+	z-index: 10000;
+}
+
+.use_win,.user_win1,.user_win2,.user_win3{
+	position: fixed;
+	left: 10%;
+	top: calc(50% - 2rem);
+	z-index: 10001;
+	background: #fff;
+	width: 80%;
+	border-radius: 5px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding-bottom: 0.4rem;
+}
+.use_win img{
+	width: 1.4rem;
+	margin-top: -0.7rem;
+}
+.user_win1>img,.user_win2>img{
+    width: 1.72rem;
+    padding: 0.5rem 0;	
+}
+.user_win3 img{
+	width: 3.1rem;
+	padding: 0.65rem 0;	
+}
+.user_win1 p,.user_win2 p,.user_win3 p{
+    margin-bottom: 0.5rem;	
+}
+.cd_cot {
+	width: 85%;
+	margin: 7% 0;
+	line-height: 0.5rem;
+}
+
+.confirm_index{
+	width: 4.4rem;
+	height: 0.8rem;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 40px;
+	color: #fff;
+	background: #cce198;
+	font-size: 0.3rem;
+}

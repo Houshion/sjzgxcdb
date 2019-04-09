@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>绑定手机</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />		
+		<style>
+			html,body{
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="bdBox">
+			<div><input type="number" id="tel" placeholder="请输入新的手机号"  oninput="this.value = this.value.replace(/\D/g,'')" value=""/></div>
+			<div><input type="number" placeholder="请输入验证码" oninput="this.value = this.value.replace(/\D/g,'')" value="" id="yzm" /><button class="get_yzm">获取验证码</button></div>
+		</div>		
+		<div class="confirm">绑定</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+   $(function(){
+   		var off=0; 
+ 		/********验证码********/
+		$(".get_yzm").on('click', function() {
+			var tel = $('#tel').val();
+			if(isNull(tel)) {
+				tooltipbox.show("手机号码必须填写");
+			} else if(!(/^1[34578]\d{9}$/.test(tel))) {
+				tooltipbox.show('请输入正确格式的手机号码');
+			} else {
+				var second = 60;
+				var t = setInterval(function() {
+					if(second <= 0) {
+						second = 0;
+						$(".get_yzm").text("重发验证码");
+						$(".get_yzm").attr("disabled", false).css('background','#cce198');
+						clearInterval(t);
+					} else {
+						second--;
+						$(".get_yzm").attr("disabled", true);
+						$(".get_yzm").text(second + "s").css('background','#ccc');
+					}
+				}, 1000);
+
+				$.ajax({
+					type: 'POST',
+					data: {
+						account: tel
+					},
+					url: dlcUrl() + "user_api/sms",
+					dataType:"json",
+					success: function(res) {
+						console.log(res);
+						if(res.code == '1') {
+							tooltipbox.show(res.msg);
+						}else{
+							tooltipbox.show(res.msg);
+						}
+					},
+					error: function(error) {
+						tooltipbox.show('出错了');
+					}
+				});
+			}
+		})  
+		
+		/***********验证****************/
+		$('.confirm').on('click', function() {
+			var tel = $('#tel').val();
+			var yzm = $('#yzm').val();
+			if(isNull(tel)) {
+				tooltipbox.show("请输入手机号码");
+			}else if(!(/^1[34578]\d{9}$/.test(tel))) {
+				tooltipbox.show('请输入正确格式的手机号码');
+			}else if(isNull(yzm)){
+				tooltipbox.show("请输入验证码");
+			}else {
+				if(off){
+					$('.confirm').css('background','#ccc');
+					return false;
+				}
+				off=1;
+//				/***********验证*****************/
+
+				// alert({account:tel,sms:yzm});
+
+				$.ajax({
+					type:"POST",
+					data:{account:tel,sms:yzm},
+					url:dlcUrl()+"user_api/bind_phone",
+					dataType:"json",
+					success:function(res){
+						if(res.code=='1'){
+							tooltipbox.show(res.msg);
+							setTimeout(function(){
+								location.href='index.php';
+							},2000);
+						}else{
+							off=0;
+							$('.confirm').css('background','#cce198');
+							tooltipbox.show(res.msg);
+						}
+					},
+					error:function(error){
+						tooltipbox.show('出错了');
+					}
+				});
+			}
+
+		})
+		
+
+
+   })
+</script>

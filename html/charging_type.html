@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>充电类型</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />			
+	</head>
+	<body>
+		<div class="chargingBox flex-center">
+			<label>
+				<img src="../img/B_an_active.png" style="width: 1.16rem;"/>
+				<p class="font-15 paddingTB-3 active">Android Type-c</p>
+				<input type="radio"  hidden class="radios" checked name="check" value="0" />
+				<span class="checks"></span>
+			</label>
+			<label>
+				<img src="../img/B_ios.png" style="width: 1.16rem;"/>
+				<p class="font-15 paddingTB-3">Ios</p>
+				<input type="radio"  hidden class="radios"name="check" value="1" />
+				<span class="checks"></span>
+			</label>
+		</div>
+		<div class="confirm" style="margin-top: 1rem;">确认</div>
+	</body>
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/tooltipbox.js"></script>
+<script src="../js/dlc.js"></script>
+<script>
+
+	$(function(){
+		var _value='0',off=0;
+		var macno='';
+		$('.radios').change(function(){
+			_value=$(this).val();
+			if($(this).is(":checked")){
+				if(_value=='0'){
+					$(this).prevAll('img').attr('src','../img/B_an_active.png').nextAll('p').addClass('active').parents('label').siblings().find('img').attr('src','../img/B_ios.png').nextAll('p').removeClass('active');
+				}else{
+					$(this).prevAll('img').attr('src','../img/B_ios_active.png').nextAll('p').addClass('active').parents('label').siblings().find('img').attr('src','../img/B_an.png').nextAll('p').removeClass('active');
+				}
+			}
+		})
+		
+		$('.confirm').click(function(){
+			if(off){
+				return false;
+			}
+			off=1;
+			$.ajax({
+				type:"POST",
+				data:{macno:getUrlParam("macno"),type:_value},
+				url:dlcUrl()+"user_api/borrow",
+				dataType:'json',
+				success:function(data){
+					console.log(data);
+					//alert(JSON.stringify(data))
+					if(data.code=='1'){//下单成功
+						location.href='index.php?id=2&number='+data.data.number;
+					}else if(data.code=='-2'){//没缴押金
+						location.href='index.php?id=3';  
+					}else if(data.code=='-3'){//余额不足
+						location.href='index.php?id=4';
+					}else{
+						off=0;
+						tooltipbox.show(data.msg);
+					}
+				}
+			});			
+		})
+	})
+</script>

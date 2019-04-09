@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>商家资料</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />		
+	</head>
+	<body>
+		<div class="relative" id="shopBox">
+			<!--<img src="../img/bg2.png" class="shop_img"/>
+			<div class="flex-center  marginLR-20 justify-between color-999 font-14 macnoBox">
+				<span>设备编号:&nbsp;0225</span>
+				<span><img src="../img/an.png"  style="width: 0.3rem;"/>&nbsp;20</span>
+				<span><img src="../img/ios.png"  style="width: 0.26rem;"/>&nbsp;20</span>
+				<span>可归还&nbsp;50</span>
+			</div>-->
+		</div>  
+		<div class="shop_dataBox marginTop-20">
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15">
+				<em class="flex-center"><img src="../img/shop.png"/><i class="color-333 marginLeft-20">商家名称</i></em><span class="color-999" id="name"></span>
+			</div>
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15">
+				<em class="flex-center"><img src="../img/tel.png"/><i class="color-333 marginLeft-20">商家电话</i></em><a class="color-999" id="phone"></a>
+			</div>
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15">
+				<em class="flex-center"><img src="../img/time.png"/><i class="color-333 marginLeft-20">营业时间</i></em><span class="color-999" id="work_hours"></span>
+			</div>
+			<div class="LR-block paddingTB-4 paddingLR-24 font-15">
+				<em class="flex-center"><img src="../img/s_location.png"/><i class="color-333 marginLeft-20">商家地址</i></em><span class="color-999" id="addr"></span>
+			</div>
+		</div>
+	</body>
+</html>
+<script src="../js/jquery.min.js"></script>
+<script src="../js/tooltipbox.js"></script>
+<script src="../js/dlc.js"></script>
+<script>
+	$(function(){
+		var seller_id=getUrlParam('seller_id');
+		$.ajax({
+			type:"POST",
+			data:{seller_id:seller_id},
+			url:dlcUrl()+"user_api/seller_detail",
+			dataType:'json',
+			success:function(data){
+				console.log(data);
+				var str='';
+				if(data.code=='1'){
+				str='<img src="'+data.data.img+'" class="shop_img"/>'+
+					'<div class="flex-center  marginLR-20 justify-between color-999 font-14 macnoBox">'+
+						'<span>设备编号:&nbsp;'+data.data.macno+'</span>'+
+						'<span><img src="../img/an.png"  style="width: 0.3rem;"/>&nbsp;'+data.data.androids+'</span>'+
+						'<span><img src="../img/ios.png"  style="width: 0.26rem;"/>&nbsp;'+data.data.apples+'</span>'+
+						'<span>可归还&nbsp;'+data.data.frees+'</span>'+
+					'</div>';
+				$('#shopBox').html(str);
+				$('#name').text(data.data.agentname);
+				$('#phone').text(data.data.phone).attr('href','tel:'+data.data.phone);
+				$('#work_hours').text(data.data.work_hours);
+				$('#addr').text(data.data.addr);
+			}
+			}
+		});
+	})
+</script>

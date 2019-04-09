@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>充值</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />	
+	</head>
+	<body>
+		<div class="paddingTB-4 marginLeft-20 color-999 font-15">充值金额</div>
+		<div class="recharge_chose clearfix marginBottom-20">
+			<div class="font-15 color-999 left active">
+				<p class="marginBottom-10">50元</p>
+				<p>售价:<span>48</span>元</p>
+			</div>
+			<div class="font-15 color-999 left">
+				<p class="marginBottom-10">100元</p>
+				<p>售价:<span>98</span>元</p>
+			</div>
+			<div class="font-15 color-999 left">
+				<p class="marginBottom-10">200元</p>
+				<p>售价:<span>185</span>元</p>
+			</div>
+			<div class="font-15 color-999 left">
+				<p class="marginBottom-10">300元</p>
+				<p>售价:<span>265</span>元</p>
+			</div>
+		</div>
+		<div class="rechargeBox color-333 font-15">
+			<p>其他金额</p>
+			<p class="border_bottom">
+				<span style="font-size: 0.47rem;margin-right: 0.2rem;vertical-align: sub;">￥</span>
+				<input type="number" id="money" value="" placeholder="其他金额须≥1元"/>
+			</p>
+		</div>
+		<div class="confirm" style="margin-top: 0.85rem;">确认</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+	var _value='',origin_money='';
+	var off=0;
+	$(function(){
+		$.ajax({
+	        type: 'POST',
+	        url:dlcUrl()+'user_api/pack_list',
+			dataType:'json',
+	        success: function(data){
+	        	console.log(data);
+	        	var str='';
+	        	if(data.code=='1'){
+	        		for(var i in data.data){
+	        			str+='<div class="font-15 color-999 left '+(i==0?'active':'')+'">'+
+								'<p class="marginBottom-10"><i>'+data.data[i].money+'</i>元</p>'+
+								'<p>售价:<span>'+data.data[i].discount+'</span>元</p>'+
+							'</div>'
+	        		}
+	        		if(str){
+	        			try{
+	        				_value=data.data[0].discount;
+	        				origin_money=data.data[0].money;
+	        			}catch(e){
+	        				//TODO handle the exception
+	        			}
+	        			$('.recharge_chose').html(str);
+	        		}else{
+	        			$('.recharge_chose').html(emptyTip('暂无套餐'));
+	        		}
+	        	}
+	        }
+          })		
+		
+		
+		$('.recharge_chose ').on('click','div',function(){  
+			$(this).addClass('active').siblings().removeClass('active');
+			_value=$(this).find('span').text();  
+			origin_money=$(this).find('i').text();
+			$('#money').val('')
+		})
+		
+		$('#money').on('keyup',function(){
+			if(!isNull($('#money').val())){
+				$('.recharge_chose div').removeClass('active');
+				_value='';
+				origin_money='';
+			}
+		})
+		
+		$('.confirm').click(function(){
+			var re_money='';
+			var money=$('#money').val();
+			if(!isNull(money)){
+				if(money<1){
+					tooltipbox.show('金额须大于1');
+					return false;
+				}
+				_value='';
+				origin_money='';
+				re_money=money;
+			}else{
+				re_money=origin_money;
+			}
+			
+			if(re_money==''){
+				tooltipbox.show('请填写或选择金额');
+				return false;
+			}else{
+				console.log(re_money+','+_value)
+//				tooltipbox.show('充值'+re_money+'元成功')
+				if(off){
+					return false;
+					tooltipbox.show('请不要重复支付');
+				}
+				off=1;
+				tooltipbox.show("请稍后...",'bottom',1000)
+				$.ajax({
+			        type:'post',
+			        data:{type:1,money:re_money,real_money:_value},
+			        url:  dlcUrl()+'user_api/wxpay',
+			        dataType: 'json',
+			        success: function(result){
+						// alert(JSON.stringify(result));
+			        	if(result.code=='1'){
+				        	jsApiParameters=result.data;
+				        	// order_id=result.data.order_id;
+				        	callpay();
+			        	}
+	
+			        },error:function(err){
+			        	tooltipbox.show('出错了')
+			        	off=0;
+			        }
+				});				
+			}
+		})
+	})
+
+
+ 	// 提交支付信息
+	var jsApiParameters = {}; 
+	
+	//调用微信JS api 支付
+	function jsApiCall()
+	{
+		WeixinJSBridge.invoke(
+			'getBrandWCPayRequest',
+			jsApiParameters, // 提交的支付信息
+			function(res){
+				WeixinJSBridge.log(res.err_msg);
+//				alert(JSON.stringify(res));
+				if(res.err_msg == 'get_brand_wcpay_request:ok'){
+					tooltipbox.show('充值成功')
+					setTimeout(function(){
+						// location.replace('zy_person_center.html');
+						// history.go(-1)
+						location.href='charging_type.html?macno='+window.localStorage.getItem("macno");
+					},1500)
+				}else{
+					off=0;
+					tooltipbox.show("取消支付")
+				}
+			}
+		);
+	}
+	//调用微信 支付
+	function callpay()
+	{
+		if (typeof WeixinJSBridge == "undefined"){
+			if( document.addEventListener ){
+				document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+				
+			}else if (document.attachEvent){
+				document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+				document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+			}
+		}else{
+			jsApiCall();
+		}
+	}
+</script>

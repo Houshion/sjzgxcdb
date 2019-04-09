@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>押金充值</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />		
+	</head>
+	<body>
+		<div class="headerImgBox flex-center justify-center" style="overflow: hidden;height: 3.18rem;">
+			<div class="depositBox  flex-center justify-center color-cce198" style="font-size: 0.5rem;">30元</div>
+		</div>	
+		<div class="paddingTB-4 marginLeft-20 color-999 font-15">充值方式</div>
+		<div class="LR-block paddingTB-4 paddingLR-24 font-15">
+			<em class="flex-center"><img src="../img/wechat.png" class="marginRight-20" style="width: 0.5rem;"/><i class="color-333 marginRight-20">微信支付</i></em>
+			<img src="../img/true.png" style="width: 0.45rem;"/>
+		</div>
+		<div class="confirm" style="margin-top: 1.18rem;">立即充值</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script type="text/javascript" src="../js/dlc.js"></script>
+<script>
+	var deposit=30;
+	var off=0;
+	$(function(){
+		$('.confirm').click(function(){
+			if(off){
+				return false;
+			}
+			off=1;
+			tooltipbox.show("请稍后...",'bottom',1000)
+			$.ajax({
+		        type:'post',
+		        data:{type:2,money:deposit},
+		        url:  dlcUrl()+'user_api/wxpay',
+		        dataType: 'json',
+		        success: function(result){
+		        	//alert(JSON.stringify(result))
+		        	if(result.code=='1'){
+			        	jsApiParameters=result.data;
+			        	// order_id=result.data.order_id;
+			        	callpay();
+		        	}
+
+		        },error:function(err){
+		        	tooltipbox.show('出错了')
+		        	off=0;
+		        }
+			});
+		})
+	})
+
+
+ 	// 提交支付信息
+	var jsApiParameters = {}; 
+	
+	//调用微信JS api 支付
+	function jsApiCall()
+	{
+		WeixinJSBridge.invoke(
+			'getBrandWCPayRequest',
+			jsApiParameters, // 提交的支付信息
+			function(res){
+				WeixinJSBridge.log(res.err_msg);
+//				alert(JSON.stringify(res));
+				if(res.err_msg == 'get_brand_wcpay_request:ok'){
+					if(getUrlParam('from')){
+						history.go(-2);
+					}else{
+						location.replace('recharge_success.html');
+					}
+				}else{
+					off=0;
+					tooltipbox.show("取消支付")
+				}
+			}
+		);
+	}
+	//调用微信 支付
+	function callpay()
+	{
+		if (typeof WeixinJSBridge == "undefined"){
+			if( document.addEventListener ){
+				document.addEventListener('WeixinJSBridgeReady', jsApiCall, false);
+				
+			}else if (document.attachEvent){
+				document.attachEvent('WeixinJSBridgeReady', jsApiCall);
+				document.attachEvent('onWeixinJSBridgeReady', jsApiCall);
+			}
+		}else{
+			jsApiCall();
+		}
+	}
+</script>

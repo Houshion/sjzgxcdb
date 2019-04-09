@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>我的</title>
+		<meta name="keywords" content="">
+		<meta name="description" content="">
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="Cache-Control" content="no-siteapp" />
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="format-detection" content="telephone=no,email=no,address=no" />
+		<meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+		<link rel="stylesheet" href="../css/zy_common.css" />
+		<link rel="stylesheet" href="../css/zy_base.css" />
+		<style>
+			html,body{
+				overflow: hidden;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="headerImgBox flex-center justify-center" style="overflow: hidden;">
+			<div class="headerBox  text-center">
+				<a href="zy_person_data.html" class="inline-block"><img class="headimg" /></a> 
+				<p class="color-fff nickname font-15"></p>
+			</div>
+		</div>
+		<div class="person_list marginTop-20 font-15">
+			<a class="flex-center" id="wallet">
+				<span class="color-333 flex-center"><img src="../img/money.png"/>我的钱包</span><img src="../img/arrow_right.png" class="right"/>
+			</a>
+			<a href="order.html"  class="flex-center" id="phone">
+				<span  class="color-333 flex-center"><img src="../img/ic_order.png"/>我的订单</span><img src="../img/arrow_right.png" class="right"/>
+			</a>
+		</div>
+	</body>
+</html>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/tooltipbox.js"></script>
+<script>
+	$(function(){
+
+		addEventback("zy_person_center.html");
+
+		$.ajax({
+	        type: 'POST',
+	        url:dlcUrl()+'user_api/get_userinfo',
+			dataType:'json',
+	        success: function(data){
+	        	console.log(data);
+	        	if(data.code=='1'){
+	        		$('.headimg').attr('src',data.data.avatar);
+	        		$('.nickname').text(data.data.nickname);
+	        	}else{
+	        		tooltipbox.show('获取个人信息失败');
+	        	}
+	        }
+		})
+		$('#wallet').click(function(){
+			location.href='my_wallet.html';
+		})
+
+		function addEventback(url){
+			pushHistory();
+			// var bool=false;  
+			
+			// setTimeout(function(){  
+			// 	bool=true;  
+			// },1500);  
+			window.addEventListener("popstate", function(e) {  
+				// if(bool){  
+					// alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能     
+						location.href=url;  
+				// }  
+				//pushHistory();
+			}, false); 
+		}
+		function pushHistory(){
+			var state = {
+				title : "",
+				url : "#"
+			};
+			window.history.replaceState(state, "", "#");	
+		}
+	})
+</script>
+
